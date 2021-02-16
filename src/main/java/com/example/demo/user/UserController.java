@@ -5,9 +5,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     @Autowired
     UserRepository userRepository;
+
     @PostMapping("/users/forgot-password")
     public Status verifyotp(@Valid @RequestBody User newUser){
         if(newUser.getOtp()  == null){
@@ -23,9 +25,10 @@ public class UserController {
                     user.setOtp(newUser.getOtp());
                     userRepository.save(user);
                     System.out.println(userRepository.findById(user.getId()));
+                    return Status.SUCCESS;
                 }
             }
-            return Status.SUCCESS;
+            return Status.FAILURE;
         }
     }
     @PostMapping("/users/register")
@@ -34,7 +37,7 @@ public class UserController {
         System.out.println("New user: " + newUser.toString());
         for (User user : users) {
             System.out.println("Registered user: " + newUser.toString());
-            if (user.equals(newUser)) {
+            if (user.getUsername().equals(newUser.getUsername())) {
                 System.out.println("User Already exists!");
                 return Status.USER_ALREADY_EXISTS;
             }
